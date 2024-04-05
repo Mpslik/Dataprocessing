@@ -65,7 +65,7 @@ The visualization step produces a PDF report containing:
 See the `visualize_results` rule in the Snakefile for more details.
 
 ## License
-This project is licensed under the GPU3 - see the LICENSE.md file for details.
+This project is licensed under the GPL-3.0 license - see the LICENSE.md file for details.
 
 ## Acknowledgments
 - Tools and libraries: Snakemake, BWA, Samtools, and others.
