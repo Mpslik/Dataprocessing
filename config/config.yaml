@@ -14,7 +14,7 @@ paths:
   referance_genome_download: "genome/"
   adapters: "intermediate_results/adapters/"
   visualizations: "results/visualizations/"
-  coverage: "results/coverage/"
+  coverage: "results/coverage"
   logs: "logs/"
 
 params:

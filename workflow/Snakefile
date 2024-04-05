@@ -134,14 +134,16 @@ rule gff_to_bed:
 
 rule calculate_coverage:
     input:
-        bam=config["paths"]["aligned_reads"] + "/{sample}.sorted.bam",
+        bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam",
         bed=config["paths"]["reference_genome"] + ".bed"
     output:
         summary=config["paths"]["coverage"] + "/{sample}_coverage_summary.txt"
     log:
-        config["paths"]["logs"] + "/calculate_coverage_{sample}.log"
+        config["paths"]["logs"] + "calculate_coverage_{sample}.log"
     shell:
-        "samtools depth -a -b {input.bed} {input.bam} | awk 'BEGIN{total=0; covered=0; sum=0} {if ($3>0) covered++; total++; sum+=$3} END{print \"Average coverage: \"sum/total\"\\nPercentage covered: \"covered/total*100}' > {output.summary} 2> {log}"
+        """
+        samtools depth -a -b {input.bed} {input.bam} | awk 'BEGIN{{total=0; covered=0; sum=0}} {{if ($3>0) covered++; total++; sum+=$3}} END{{print "Average coverage: "sum/total"\\nPercentage covered: "covered/total*100}}' > {output.summary} 2> {log}
+        """
 
 rule assemble_contigs:
     input:
