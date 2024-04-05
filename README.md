@@ -64,7 +64,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 Acknowledgments
 Tools and libraries: Snakemake, BWA, Samtools, and others.
 Data sources: NCBI datasets.
-Remember to replace placeholders (like [repository URL], [repository name], and [number_of_cores]) with actual values relevant to your project. Feel free to extend any section with more specific instructions or descriptions as needed.
+
 
 
 
