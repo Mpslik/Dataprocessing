@@ -45,6 +45,7 @@ Copy code
 
 - Replace `[number_of_cores]` with the number of CPU cores you wish to use.
 
+
 ## Pipeline Steps
 1. **Read Preprocessing:** Quality control and trimming of raw reads.
 2. **Genome Assembly:** Assembling reads into contigs.
@@ -52,7 +53,7 @@ Copy code
 4. **Gene Prediction:** Identifying gene structures in the assembled genome.
 5. **Functional Annotation:** Annotating predicted genes with functional information.
 6. **Visualization:** Generating visual summaries of key metrics.
-
+![Alt text]([path/to/image.png](https://github.com/Mpslik/Dataprocessing/blob/main/dag.png))
 ### Visualization
 The visualization step produces a PDF report containing:
 - Distribution of contig lengths
