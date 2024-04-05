@@ -53,7 +53,8 @@ Copy code
 4. **Gene Prediction:** Identifying gene structures in the assembled genome.
 5. **Functional Annotation:** Annotating predicted genes with functional information.
 6. **Visualization:** Generating visual summaries of key metrics.
-![Alt text]([path/to/image.png](https://github.com/Mpslik/Dataprocessing/blob/main/dag.png))
+![DAG Visualization](dag.png "Directed Acyclic Graph")
+
 ### Visualization
 The visualization step produces a PDF report containing:
 - Distribution of contig lengths
