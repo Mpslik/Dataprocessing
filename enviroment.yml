@@ -1,0 +1,41 @@
+name: ngs-analysis-core
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.9
+  - snakemake=7.8.0
+  - r-base=4.1.0
+  - r-ggplot2
+  - r-dplyr
+  - r-tidyr
+  - r-readr
+  - r-pheatmap
+  - r-ggridges
+  - r-circlize
+  - bioconductor-biostrings
+  - bioconductor-genomicranges
+  - bioconductor-genomicalignments
+  - bioconductor-rsamtools
+  - bioconductor-genomicfeatures
+  - bioconductor-gviz
+  - bwa=0.7.17
+  - samtools=1.15
+  - megahit=1.2.9
+  - trimmomatic=0.39
+  - ncbi-datasets-cli=16.10.1
+  - prodigal
+  - r-igraph
+  - r-ggraph
+  - openjdk=8.0.312  # Required by Trimmomatic
+  - ncurses
+  - pip
+  - pandas
+  - numpy
+  - biopython
+  - certifi
+  - zlib
+  - graphviz
+
+  - r-tidyverse
