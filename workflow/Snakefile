@@ -1,0 +1,171 @@
+configfile: "config/config.yaml"
+
+SAMPLES = config["samples"]
+ruleorder: bwa_index > analyze_metagenome
+
+rule all:
+    input:
+        expand("results/analyzed_metagenome/{sample}_genes.gff",sample=SAMPLES),
+        expand("results/analyzed_metagenome/{sample}_proteins.faa",sample=SAMPLES),
+        expand("results/visualizations/{sample}_visualization.pdf",sample=SAMPLES),
+        expand("results/coverage/{sample}_coverage_summary.txt", sample=SAMPLES)
+
+
+rule download_reads:
+    output:
+        r1=config["paths"]["raw_reads"] + "{sample}_R1.fastq",
+        r2=config["paths"]["raw_reads"] + "{sample}_R2.fastq"
+    params:
+        r1=lambda wildcards: config["samples"][wildcards.sample]["R1"],
+        r2=lambda wildcards: config["samples"][wildcards.sample]["R2"]
+    shell:
+        """
+        wget -O {output.r1} {params.r1}
+        wget -O {output.r2} {params.r2}
+        """
+
+
+
+rule extract_genome_and_annotations:
+    input:
+        config["paths"]["referance_genome_download"]+ "ncbi_dataset.zip"
+    output:
+        "genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna"
+    shell:
+        "unzip {input} -d genome"
+
+rule download_adapters:
+    output:
+        "intermediate_results/adapters/TruSeq3-PE.fa"
+    shell:
+        """
+        mkdir -p intermediate_results/adapters
+        curl -L https://raw.githubusercontent.com/usadellab/Trimmomatic/master/adapters/TruSeq3-PE.fa -o {output}
+        """
+
+rule download_genome_data:
+    output:
+        config["paths"]["referance_genome_download"]+ "ncbi_dataset.zip"
+    shell:
+        """
+        datasets download genome accession GCF_020171115.1 --include gff3,rna,cds,protein,genome,seq-report --filename genome/ncbi_dataset.zip
+        """
+
+rule trim_reads:
+    input:
+        r1=config["paths"]["raw_reads"] + "{sample}_R1.fastq",
+        r2=config["paths"]["raw_reads"] + "{sample}_R2.fastq",
+        adapters="intermediate_results/adapters/TruSeq3-PE.fa"
+    output:
+        trimmed_r1=config["paths"]["trimmed_reads"] + "{sample}_R1_trimmed.fq",
+        trimmed_r2=config["paths"]["trimmed_reads"] + "{sample}_R2_trimmed.fq"
+    shell:
+        """
+        trimmomatic PE {input.r1} {input.r2} {output.trimmed_r1} {output.trimmed_r1}_unpaired.fq {output.trimmed_r2} {output.trimmed_r2}_unpaired.fq \
+        ILLUMINACLIP:{input.adapters}:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36
+        """
+
+rule bwa_index:
+    input:
+        ref="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna"
+    output:
+        amb="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.amb",
+        ann="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.ann",
+        bwt="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.bwt",
+        pac="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.pac",
+        sa="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.sa"
+    shell:
+        "bwa index {input.ref}"
+
+rule align_reads:
+    input:
+        r1="intermediate_results/trimmed_reads/{sample}_R1_trimmed.fq",
+        r2="intermediate_results/trimmed_reads/{sample}_R2_trimmed.fq",
+        ref="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna",
+        index_amb="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.amb",
+        index_ann="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.ann",
+        index_bwt="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.bwt",
+        index_pac="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.pac",
+        index_sa="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna.sa"
+    output:
+        bam="intermediate_results/aligned_reads/{sample}.unsorted.bam"
+    shell:
+        "bwa mem -t 2 {input.ref} {input.r1} {input.r2} | samtools view -Sb - > {output.bam}"
+
+rule sort_bam:
+    input:
+        "intermediate_results/aligned_reads/{sample}.unsorted.bam"
+    output:
+        "intermediate_results/aligned_reads/{sample}.sorted.bam"
+    shell:
+        """
+        samtools sort {input} -o {output}
+        """
+
+rule index_bam:
+    input:
+        "intermediate_results/aligned_reads/{sample}.sorted.bam"
+    output:
+        "intermediate_results/aligned_reads/{sample}.sorted.bam.bai"
+    shell:
+        "samtools index {input}"
+
+rule gff_to_bed:
+    input:
+        gff="genome/ncbi_dataset/data/GCF_020171115.1/genomic.gff"
+    output:
+        bed="genome/ncbi_dataset/data/GCF_020171115.1/genomic.bed"
+    shell:
+        """
+        awk '!/^#/ {{print $1, $4-1, $5, $9, ".", $7}}' {input.gff} > {output.bed}
+        """
+
+rule calculate_coverage:
+    input:
+        bam="intermediate_results/aligned_reads/{sample}.sorted.bam",
+        bai="intermediate_results/aligned_reads/{sample}.sorted.bam.bai",
+        bed="genome/ncbi_dataset/data/GCF_020171115.1/genomic.bed"
+    output:
+        "results/coverage/{sample}_coverage_summary.txt"
+    shell:
+        """
+        samtools depth -a -b {input.bed} {input.bam} | \
+        awk 'BEGIN{{total=0; covered=0; sum=0}} {{if ($3>0) covered++; total++; sum+=$3}} END{{print "Average coverage: "sum/total"\\nPercentage covered: "covered/total*100}}' > {output}
+        """
+
+rule assemble_contigs:
+    input:
+        trimmed_r1="intermediate_results/trimmed_reads/{sample}_R1_trimmed.fq",
+        trimmed_r2="intermediate_results/trimmed_reads/{sample}_R2_trimmed.fq"
+    output:
+        contigs="intermediate_results/assembled_contigs/{sample}/final.contigs.fa"  # Explicit output file
+    params:
+        min_contig_len=config['params']['megahit']['min_contig_len'],
+        output_dir=lambda wildcards: f"intermediate_results/assembled_contigs/{wildcards.sample}"
+    shell:
+        """
+        rm -rf {params.output_dir}
+        megahit -1 {input.trimmed_r1} -2 {input.trimmed_r2} --min-contig-len {params.min_contig_len} -o {params.output_dir}
+        """
+
+rule analyze_metagenome:
+    input:
+        contigs="intermediate_results/assembled_contigs/{sample}/final.contigs.fa"
+    output:
+        genes="results/analyzed_metagenome/{sample}_genes.gff",
+        proteins="results/analyzed_metagenome/{sample}_proteins.faa"
+    shell:
+        """
+        prodigal -i {input.contigs} -a {output.proteins} -o {output.genes} -p meta
+        """
+
+rule visualize_results:
+    input:
+        genes_gff="results/analyzed_metagenome/{sample}_genes.gff",
+        proteins_faa="results/analyzed_metagenome/{sample}_proteins.faa",
+        summary="results/coverage/{sample}_coverage_summary.txt",
+        contigs="intermediate_results/assembled_contigs/{sample}/final.contigs.fa"
+    output:
+        visualization="results/visualizations/{sample}_visualization.pdf"
+    script:
+        "scripts/visualizer.R"
