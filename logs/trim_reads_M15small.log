@@ -1,0 +1,7 @@
+TrimmomaticPE: Started with arguments:
+ raw_reads//M15small_R1.fastq raw_reads//M15small_R2.fastq intermediate_results/trimmed_reads//M15small_R1_trimmed.fq intermediate_results/trimmed_reads//M15small_R1_trimmed.fq_unpaired.fq intermediate_results/trimmed_reads//M15small_R2_trimmed.fq intermediate_results/trimmed_reads//M15small_R2_trimmed.fq_unpaired.fq ILLUMINACLIP:intermediate_results/adapters/TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36
+Using PrefixPair: 'TACACTCTTTCCCTACACGACGCTCTTCCGATCT' and 'GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT'
+ILLUMINACLIP: Using 1 prefix pairs, 0 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
+Quality encoding detected as phred33
+Input Read Pairs: 9842 Both Surviving: 9765 (99.22%) Forward Only Surviving: 17 (0.17%) Reverse Only Surviving: 0 (0.00%) Dropped: 60 (0.61%)
+TrimmomaticPE: Completed successfully

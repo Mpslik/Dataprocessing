@@ -1,0 +1,10 @@
+Archive:  genome/ncbi_dataset.zip
+  inflating: genome/README.md        
+  inflating: genome/ncbi_dataset/data/assembly_data_report.jsonl  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/genomic.gff  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/rna.fna  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/cds_from_genomic.fna  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/protein.faa  
+  inflating: genome/ncbi_dataset/data/GCF_020171115.1/sequence_report.jsonl  
+  inflating: genome/ncbi_dataset/data/dataset_catalog.json  
