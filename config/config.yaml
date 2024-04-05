@@ -1,0 +1,22 @@
+samples:
+  M15small:
+    R1: "https://bitbucket.org/plyusnin/lazypipe/raw/bea08338ad9579390e3b5641af914b4283f61270/data/samples/M15small_R1.fastq"
+    R2: "https://bitbucket.org/plyusnin/lazypipe/raw/bea08338ad9579390e3b5641af914b4283f61270/data/samples/M15small_R2.fastq"
+
+paths:
+  raw_reads: "raw_reads/"
+  trimmed_reads: "intermediate_results/trimmed_reads/"
+  aligned_reads: "intermediate_results/aligned_reads/"
+  assembled_contigs: "intermediate_results/assembled_contigs/"
+  analyzed_metagenome: "results/analyzed_metagenome/"
+  reference_genome: "genome/ncbi_dataset/data/{refseq_id}/{refseq_id}_genomic.fna"
+  illumina_clip: "intermediate_results/adapters/TruSeq3-PE.fa"
+  referance_genome_download: "genome/"
+params:
+  trimmomatic:
+    slidingwindow: "4:15"
+    minlen: "36"
+  bwa_mem: "-t 8"
+  megahit:
+    min_contig_len: "200"
+
