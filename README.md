@@ -18,7 +18,7 @@ Clone the repository:
 ```bash
 git clone https://github.com/Mpslik/Dataprocessing
 cd Dataprocessing/
-
+```
 Set up the Conda environment:
 
 conda env create -f environment.yml
@@ -37,9 +37,9 @@ Configure your analysis:
 - Edit the `config/config.yaml` file to specify your samples, paths to raw reads, and other configuration options.
 
 Run the pipeline:
-
-snakemake --use-conda --cores [number_of_cores]
-
+```bash
+snakemake --cores [number_of_cores] -s workflow/Snakefile
+```
 markdown
 Copy code
 
