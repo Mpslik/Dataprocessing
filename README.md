@@ -53,7 +53,8 @@ Copy code
 4. **Gene Prediction:** Identifying gene structures in the assembled genome.
 5. **Functional Annotation:** Annotating predicted genes with functional information.
 6. **Visualization:** Generating visual summaries of key metrics.
-![Alt text]([path/to/image.png](https://github.com/Mpslik/Dataprocessing/blob/main/dag.png))
+![DAG Visualization](dag.png "Directed Acyclic Graph")
+
 ### Visualization
 The visualization step produces a PDF report containing:
 - Distribution of contig lengths
@@ -64,7 +65,7 @@ The visualization step produces a PDF report containing:
 See the `visualize_results` rule in the Snakefile for more details.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GPL-3.0 license - see the LICENSE.md file for details.
 
 ## Acknowledgments
 - Tools and libraries: Snakemake, BWA, Samtools, and others.
