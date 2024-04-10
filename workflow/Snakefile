@@ -4,22 +4,29 @@ configfile: "config/config.yaml"
 SAMPLES = config["samples"]
 ruleorder: bwa_index > analyze_metagenome
 
+# Run the Python script to create necessary directories
+# Define an onstart handler to create directories before any rules are executed
+onstart:
+    shell: "python setup_directories.py {configfile}"
+
+
+
 rule all:
     input:
-        expand(config["paths"]["analyzed_metagenome"] + "/{sample}_genes.gff", sample=SAMPLES),
-        expand(config["paths"]["analyzed_metagenome"] + "/{sample}_proteins.faa", sample=SAMPLES),
-        expand(config["paths"]["visualizations"] + "/{sample}_visualization.pdf", sample=SAMPLES),
-        expand(config["paths"]["coverage"] + "/{sample}_coverage_summary.txt", sample=SAMPLES)
+        expand(config["paths"]["analyzed_metagenome"] + "{sample}_genes.gff", sample=SAMPLES),
+        expand(config["paths"]["analyzed_metagenome"] + "{sample}_proteins.faa", sample=SAMPLES),
+        expand(config["paths"]["visualizations"] + "{sample}_visualization.pdf", sample=SAMPLES),
+        expand(config["paths"]["coverage"] + "{sample}_coverage_summary.txt", sample=SAMPLES)
 
 rule download_reads:
     output:
-        r1=config["paths"]["raw_reads"] + "/{sample}_R1.fastq",
-        r2=config["paths"]["raw_reads"] + "/{sample}_R2.fastq"
+        r1=config["paths"]["raw_reads"] + "{sample}_R1.fastq",
+        r2=config["paths"]["raw_reads"] + "{sample}_R2.fastq"
     params:
         r1=lambda wildcards: config["samples"][wildcards.sample]["R1"],
         r2=lambda wildcards: config["samples"][wildcards.sample]["R2"]
     log:
-        config["paths"]["logs"] + "/download_reads_{sample}.log"
+        config["paths"]["logs"] + "download_reads_{sample}.log"
     shell:
         "wget -O {output.r1} {params.r1} &> {log}; wget -O {output.r2} {params.r2} &>> {log}"
 
@@ -27,7 +34,7 @@ rule download_adapters:
     output:
         config["paths"]["adapters"] + "TruSeq3-PE.fa"
     log:
-        config["paths"]["logs"] + "/download_adapters.log"
+        config["paths"]["logs"] + "download_adapters.log"
     shell:
         """
         curl -L https://raw.githubusercontent.com/usadellab/Trimmomatic/master/adapters/TruSeq3-PE.fa -o {output} &> {log}
@@ -45,7 +52,7 @@ rule extract_genome_and_annotations:
     input:
         config["paths"]["referance_genome_download"] + "ncbi_dataset.zip"
     output:
-        fna="genome/ncbi_dataset/data/GCF_020171115.1/GCF_020171115.1_ASM_NN_V1_genomic.fna",
+        fna=config["paths"]["reference_genome"],
         gff="genome/ncbi_dataset/data/GCF_020171115.1/genomic.gff"
     log:
         config["paths"]["logs"] + "/extract_genome_and_annotations.log"
@@ -56,14 +63,14 @@ rule extract_genome_and_annotations:
 
 rule trim_reads:
     input:
-        r1=config["paths"]["raw_reads"] + "/{sample}_R1.fastq",
-        r2=config["paths"]["raw_reads"] + "/{sample}_R2.fastq",
+        r1=config["paths"]["raw_reads"] + "{sample}_R1.fastq",
+        r2=config["paths"]["raw_reads"] + "{sample}_R2.fastq",
         adapters=config["paths"]["adapters"] + "TruSeq3-PE.fa"
     output:
-        trimmed_r1=config["paths"]["trimmed_reads"] + "/{sample}_R1_trimmed.fq",
-        trimmed_r2=config["paths"]["trimmed_reads"] + "/{sample}_R2_trimmed.fq"
+        trimmed_r1=config["paths"]["trimmed_reads"] + "{sample}_R1_trimmed.fq",
+        trimmed_r2=config["paths"]["trimmed_reads"] + "{sample}_R2_trimmed.fq"
     log:
-        config["paths"]["logs"] + "/trim_reads_{sample}.log"
+        config["paths"]["logs"] + "trim_reads_{sample}.log"
     shell:
         """
         trimmomatic PE {input.r1} {input.r2} {output.trimmed_r1} {output.trimmed_r1}_unpaired.fq {output.trimmed_r2} {output.trimmed_r2}_unpaired.fq ILLUMINACLIP:{input.adapters}:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 &> {log}
@@ -73,50 +80,46 @@ rule bwa_index:
     input:
         ref=config["paths"]["reference_genome"]
     output:
-        amb=config["paths"]["reference_genome"] + ".amb",
-        ann=config["paths"]["reference_genome"] + ".ann",
-        bwt=config["paths"]["reference_genome"] + ".bwt",
-        pac=config["paths"]["reference_genome"] + ".pac",
-        sa=config["paths"]["reference_genome"] + ".sa"
+        touch("genome.indexed")
     log:
         config["paths"]["logs"] + "/bwa_index.log"
     shell:
-        "bwa index {input.ref} &> {log}"
-
+        """(
+        bwa index {input.ref} && touch {output}
+        ) >{log} 2>&1"""
 rule align_reads:
     input:
-        r1=config["paths"]["trimmed_reads"] + "/{sample}_R1_trimmed.fq",
-        r2=config["paths"]["trimmed_reads"] + "/{sample}_R2_trimmed.fq",
+        r1=config["paths"]["trimmed_reads"] + "{sample}_R1_trimmed.fq",
+        r2=config["paths"]["trimmed_reads"] + "{sample}_R2_trimmed.fq",
         ref=config["paths"]["reference_genome"],
-        amb=config["paths"]["reference_genome"] + ".amb",
-        ann=config["paths"]["reference_genome"] + ".ann",
-        bwt=config["paths"]["reference_genome"] + ".bwt",
-        pac=config["paths"]["reference_genome"] + ".pac",
-        sa=config["paths"]["reference_genome"] + ".sa"
+        indexed="genome.indexed"
     output:
-        bam=config["paths"]["aligned_reads"] + "/{sample}.unsorted.bam"
+        bam=config["paths"]["aligned_reads"] + "{sample}.unsorted.bam"
     log:
         config["paths"]["logs"] + "/align_reads_{sample}.log"
     shell:
-        "bwa mem -t 2 {input.ref} {input.r1} {input.r2} | samtools view -Sb - > {output.bam} 2> {log}"
+        """
+        bwa mem -t 2 {input.ref} {input.r1} {input.r2} | samtools view -Sb - > {output.bam} 2> {log}
+        """
 
 rule sort_bam:
     input:
-        bam=config["paths"]["aligned_reads"] + "/{sample}.unsorted.bam"
+        bam=config["paths"]["aligned_reads"] + "{sample}.unsorted.bam"
     output:
-        sorted_bam=config["paths"]["aligned_reads"] + "/{sample}.sorted.bam"
+        sorted_bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam"
     log:
-        config["paths"]["logs"] + "/sort_bam_{sample}.log"
+        config["paths"]["logs"] + "sort_bam_{sample}.log"
     shell:
         "samtools sort {input.bam} -o {output.sorted_bam} 2> {log}"
 
 rule index_bam:
     input:
-        sorted_bam=config["paths"]["aligned_reads"] + "/{sample}.sorted.bam"
+        sorted_bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam"
     output:
-        bai=config["paths"]["aligned_reads"] + "/{sample}.sorted.bam.bai"
+        touch(config["paths"]["aligned_reads"] + "{sample}.sorted.bam"),
+        bai=config["paths"]["aligned_reads"] + "{sample}.sorted.bam.bai"
     log:
-        config["paths"]["logs"] + "/index_bam_{sample}.log"
+        config["paths"]["logs"] + "index_bam_{sample}.log"
     shell:
         "samtools index {input.sorted_bam} 2> {log}"
 
@@ -135,9 +138,10 @@ rule gff_to_bed:
 rule calculate_coverage:
     input:
         bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam",
+        bai=config["paths"]["aligned_reads"] + "{sample}.sorted.bam.bai",
         bed=config["paths"]["reference_genome"] + ".bed"
     output:
-        summary=config["paths"]["coverage"] + "/{sample}_coverage_summary.txt"
+        summary=config["paths"]["coverage"] + "{sample}_coverage_summary.txt"
     log:
         config["paths"]["logs"] + "calculate_coverage_{sample}.log"
     shell:
@@ -147,38 +151,38 @@ rule calculate_coverage:
 
 rule assemble_contigs:
     input:
-        trimmed_r1=config["paths"]["trimmed_reads"] + "/{sample}_R1_trimmed.fq",
-        trimmed_r2=config["paths"]["trimmed_reads"] + "/{sample}_R2_trimmed.fq"
+        trimmed_r1=config["paths"]["trimmed_reads"] + "{sample}_R1_trimmed.fq",
+        trimmed_r2=config["paths"]["trimmed_reads"] + "{sample}_R2_trimmed.fq"
     output:
-        contigs=config["paths"]["assembled_contigs"] + "/{sample}/final.contigs.fa"
+        contigs=config["paths"]["assembled_contigs"] + "{sample}/final.contigs.fa"
     params:
         min_contig_len=config['params']['megahit']['min_contig_len'],
         output_dir=lambda wildcards: config["paths"]["assembled_contigs"] + "/{sample}"
     log:
-        config["paths"]["logs"] + "/assemble_contigs_{sample}.log"
+        config["paths"]["logs"] + "assemble_contigs_{sample}.log"
     shell:
         "rm -rf {params.output_dir} && megahit -1 {input.trimmed_r1} -2 {input.trimmed_r2} --min-contig-len {params.min_contig_len} -o {params.output_dir} &> {log}"
 
 rule analyze_metagenome:
     input:
-        contigs=config["paths"]["assembled_contigs"] + "/{sample}/final.contigs.fa"
+        contigs=config["paths"]["assembled_contigs"] + "{sample}/final.contigs.fa"
     output:
-        genes=config["paths"]["analyzed_metagenome"] + "/{sample}_genes.gff",
-        proteins=config["paths"]["analyzed_metagenome"] + "/{sample}_proteins.faa"
+        genes=config["paths"]["analyzed_metagenome"] + "{sample}_genes.gff",
+        proteins=config["paths"]["analyzed_metagenome"] + "{sample}_proteins.faa"
     log:
-        config["paths"]["logs"] + "/analyze_metagenome_{sample}.log"
+        config["paths"]["logs"] + "analyze_metagenome_{sample}.log"
     shell:
         "prodigal -i {input.contigs} -a {output.proteins} -o {output.genes} -p meta &> {log}"
 
 rule visualize_results:
     input:
-        genes_gff=config["paths"]["analyzed_metagenome"] + "/{sample}_genes.gff",
-        proteins_faa=config["paths"]["analyzed_metagenome"] + "/{sample}_proteins.faa",
-        summary=config["paths"]["coverage"] + "/{sample}_coverage_summary.txt",
-        contigs=config["paths"]["assembled_contigs"] + "/{sample}/final.contigs.fa"
+        genes_gff=config["paths"]["analyzed_metagenome"] + "{sample}_genes.gff",
+        proteins_faa=config["paths"]["analyzed_metagenome"] + "{sample}_proteins.faa",
+        summary=config["paths"]["coverage"] + "{sample}_coverage_summary.txt",
+        contigs=config["paths"]["assembled_contigs"] + "{sample}/final.contigs.fa"
     output:
-        visualization=config["paths"]["visualizations"] + "/{sample}_visualization.pdf"
+        visualization=config["paths"]["visualizations"] + "{sample}_visualization.pdf"
     log:
-        config["paths"]["logs"] + "/visualize_results_{sample}.log"
+        config["paths"]["logs"] + "visualize_results_{sample}.log"
     script:
         "scripts/visualizer.R"
