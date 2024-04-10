@@ -114,14 +114,13 @@ rule sort_bam:
 
 rule index_bam:
     input:
-        sorted_bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam"
+        "intermediate_results/aligned_reads/{sample}.sorted.bam"
     output:
-        touch(config["paths"]["aligned_reads"] + "{sample}.sorted.bam"),
-        bai=config["paths"]["aligned_reads"] + "{sample}.sorted.bam.bai"
+        "intermediate_results/aligned_reads/{sample}.sorted.bam.bai"
     log:
-        config["paths"]["logs"] + "index_bam_{sample}.log"
+        "logs/index_bam_{sample}.log"
     shell:
-        "samtools index {input.sorted_bam} 2> {log}"
+        "samtools index {input} 2> {log}"
 
 rule gff_to_bed:
     input:
