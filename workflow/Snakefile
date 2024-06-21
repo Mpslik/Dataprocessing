@@ -114,8 +114,8 @@ rule index_bam:
         "intermediate_results/aligned_reads/{sample}.sorted.bam.bai"
     log:
         "logs/index_bam_{sample}.log"
-    shell:
-        "samtools index {input} 2> {log}"
+    wrapper:
+        "0.84.0/bio/samtools/index"
 
 rule gff_to_bed:
     input:
