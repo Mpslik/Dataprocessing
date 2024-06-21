@@ -104,8 +104,8 @@ rule sort_bam:
         sorted_bam=config["paths"]["aligned_reads"] + "{sample}.sorted.bam"
     log:
         config["paths"]["logs"] + "sort_bam_{sample}.log"
-    shell:
-        "samtools sort {input.bam} -o {output.sorted_bam} 2> {log}"
+    wrapper:
+        "0.84.0/bio/samtools/sort"
 
 rule index_bam:
     input:
