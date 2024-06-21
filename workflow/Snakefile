@@ -71,10 +71,8 @@ rule trim_reads:
         trimmed_r2=config["paths"]["trimmed_reads"] + "{sample}_R2_trimmed.fq"
     log:
         config["paths"]["logs"] + "trim_reads_{sample}.log"
-    shell:
-        """
-        trimmomatic PE {input.r1} {input.r2} {output.trimmed_r1} {output.trimmed_r1}_unpaired.fq {output.trimmed_r2} {output.trimmed_r2}_unpaired.fq ILLUMINACLIP:{input.adapters}:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 &> {log}
-        """
+    wrapper:
+        "0.76.0/bio/trimmomatic/pe"
 
 rule bwa_index:
     input:
