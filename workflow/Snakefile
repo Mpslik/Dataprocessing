@@ -94,10 +94,8 @@ rule align_reads:
         bam=config["paths"]["aligned_reads"] + "{sample}.unsorted.bam"
     log:
         config["paths"]["logs"] + "/align_reads_{sample}.log"
-    shell:
-        """
-        bwa mem -t 2 {input.ref} {input.r1} {input.r2} | samtools view -Sb - > {output.bam} 2> {log}
-        """
+    wrapper:
+        "0.83.0/bio/bwa/mem"
 
 rule sort_bam:
     input:
