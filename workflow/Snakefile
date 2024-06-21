@@ -74,17 +74,16 @@ rule trim_reads:
     wrapper:
         "0.76.0/bio/trimmomatic/pe"
 
-rule bwa_index:
+rule index_bam:
     input:
-        ref=config["paths"]["reference_genome"]
+        "intermediate_results/aligned_reads/{sample}.sorted.bam"
     output:
-        touch("genome.indexed")
+        "intermediate_results/aligned_reads/{sample}.sorted.bam.bai"
     log:
-        config["paths"]["logs"] + "/bwa_index.log"
-    shell:
-        """(
-        bwa index {input.ref} && touch {output}
-        ) >{log} 2>&1"""
+        "logs/index_bam_{sample}.log"
+    wrapper:
+        "0.84.0/bio/samtools/index"
+
 rule align_reads:
     input:
         r1=config["paths"]["trimmed_reads"] + "{sample}_R1_trimmed.fq",
