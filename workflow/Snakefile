@@ -72,7 +72,7 @@ rule trim_reads:
     log:
         config["paths"]["logs"] + "trim_reads_{sample}.log"
     wrapper:
-        "0.76.0/bio/trimmomatic/pe"
+        "v3.12.1/bio/trimmomatic/pe"
 
 rule bwa_index:
     input:
