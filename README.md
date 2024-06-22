@@ -1,7 +1,18 @@
 # Genomic Data Analysis Project
 
 ## Overview
+### this project
 This project focuses on the analysis of genomic data to identify genes, proteins, and other genomic features from metagenomic samples. Utilizing a suite of bioinformatics tools and R for data visualization, the pipeline processes raw sequencing reads, performs assembly, gene prediction, functional annotation, and visualizes key metrics such as contig lengths, GC content, and coverage.
+
+### Original pipeline:
+The article [2] describes the development of a pipeline designed to accelerate the analysis of next-generation sequencing (NGS) data. This pipeline allows for the reliable and clear presentation of results for identifying both new and known viruses from associated or environmental samples, with an emphasis on virus discovery. The data [3] used for this purpose was derived from diarrheic American mink (Neovison vison).
+![Original Diagram]( misc/Original_pipeline_diagram.png )
+
+
+### diverance with original article: 
+
+in the original article includes more steps than the current pipeline here, i recreated the steps from the original article up and until the MGA analyse since there the time constraints and workload became to much for this project
+
 
 ## Getting Started
 
@@ -67,13 +78,12 @@ See the `visualize_results` rule in the Snakefile for more details.
 ## License
 This project is licensed under the GPL-3.0 license - see the LICENSE.md file for details.
 
-## Acknowledgments
-- Tools and libraries: Snakemake, BWA, Samtools, and others.
-- Data sources: NCBI datasets.
-Now, the markdown is correctly formatted without breaking the code block structure. Remember to replace [repository name] and [number_of_cores] with your specific details.
+## Acknowledgments / Resources 
+- [1] Tools and libraries: Snakemake, BWA, Samtools, and others.
 
-
-
+- Data sources:
+  - [2] **Article**: [Link to Article](https://academic.oup.com/ve/article/6/2/veaa091/6017186?login=false#373674411)
+  - [3] **Data**: [Link to Data Repository](https://bitbucket.org/plyusnin/lazypipe/src/master)
 
 
 
