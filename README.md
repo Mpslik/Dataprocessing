@@ -11,10 +11,10 @@ The article [2] describes the development of a pipeline designed to accelerate t
 
 
 ### differences: 
-the original article includes more steps than the current pipeline here. This project runs up to the assembly of the contigs and then pefrorms a analyses step with prodigal. 
-the change from MGA to prodigal occured due to a error running the MGA on this combination of packages and version numbers and would configure in this project pipeline. 
-The rest of the steps that branch off on the original diagram from the contigs file where also ommited due to time constraints of this school project.
-and for the project a visualisation step is included that is not pressent in the original pipeline 
+the original article includes more steps than the current pipeline here. This project runs up to the assembly of the contigs and then performs an analyses step with prodigal. 
+the change from MGA to prodigal occurred due to an error running the MGA on this combination of packages and version numbers and would configure in this project pipeline. 
+The rest of the steps that branch off on the original diagram from the contigs file where also omitted due to time constraints of this school project.
+and for the project a visualisation step is included that is not present in the original pipeline 
 
 
 ## Getting Started
