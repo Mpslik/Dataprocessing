@@ -83,16 +83,13 @@ rule bwa_index:
     input:
         ref=config["paths"]["reference_genome"]
     output:
-        touch("genome.indexed"),
-        amb=config["paths"]["reference_genome"] + ".amb",
-        ann=config["paths"]["reference_genome"] + ".ann",
-        bwt=config["paths"]["reference_genome"] + ".bwt",
-        pac=config["paths"]["reference_genome"] + ".pac",
-        sa=config["paths"]["reference_genome"] + ".sa"
+        touch("genome.indexed")
     log:
         config["paths"]["logs"] + "/bwa_index.log"
-    wrapper:
-        "0.74.0/bio/bwa/index"
+    shell:
+        """(
+        bwa index {input.ref} && touch {output}
+        ) >{log} 2>&1"""
 
 rule align_reads:
     input:
