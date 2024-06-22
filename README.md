@@ -6,12 +6,15 @@ This project focuses on the analysis of genomic data to identify genes, proteins
 
 ### Original pipeline:
 The article [2] describes the development of a pipeline designed to accelerate the analysis of next-generation sequencing (NGS) data. This pipeline allows for the reliable and clear presentation of results for identifying both new and known viruses from associated or environmental samples, with an emphasis on virus discovery. The data [3] used for this purpose was derived from diarrheic American mink (Neovison vison).
-![Original Diagram]( misc/Original_pipeline_diagram.png )
+
+![Original Diagram]( misc/Original_pipeline_diagram.jpeg )
 
 
-### diverance with original article: 
-
-in the original article includes more steps than the current pipeline here, i recreated the steps from the original article up and until the MGA analyse since there the time constraints and workload became to much for this project
+### differences: 
+the original article includes more steps than the current pipeline here. This project runs up to the assembly of the contigs and then pefrorms a analyses step with prodigal. 
+the change from MGA to prodigal occured due to a error running the MGA on this combination of packages and version numbers and would configure in this project pipeline. 
+The rest of the steps that branch off on the original diagram from the contigs file where also ommited due to time constraints of this school project.
+and for the project a visualisation step is included that is not pressent in the original pipeline 
 
 
 ## Getting Started
@@ -64,6 +67,7 @@ Copy code
 4. **Gene Prediction:** Identifying gene structures in the assembled genome.
 5. **Functional Annotation:** Annotating predicted genes with functional information.
 6. **Visualization:** Generating visual summaries of key metrics.
+
 ![DAG Visualization](dag.png "Directed Acyclic Graph")
 
 ### Visualization
@@ -71,7 +75,6 @@ The visualization step produces a PDF report containing:
 - Distribution of contig lengths
 - GC content across contigs
 - Coverage depth distribution
-- Additional plots as configured
 
 See the `visualize_results` rule in the Snakefile for more details.
 
