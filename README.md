@@ -25,40 +25,59 @@ The article [2] describes the development of a pipeline designed to accelerate t
 ![Original Diagram]( misc/Original_pipeline_diagram.jpeg )
 
 
-### differences: 
-the original article includes more steps than the current pipeline here. This project runs up to the assembly of the contigs and then performs an analyses step with prodigal. 
-the change from MGA to prodigal occurred due to an error running the MGA on this combination of packages and version numbers and would configure in this project pipeline. 
-The rest of the steps that branch off on the original diagram from the contigs file where also omitted due to time constraints of this school project.
-and for the project a visualisation step is included that is not present in the original pipeline 
+### Differences from the Original Pipeline:
 
+This implementation diverges from the pipeline described in the original article in several ways. Notably, this project encompasses the stages up to and including the assembly of contigs, followed by an analysis using Prodigal instead of MGA. The substitution of MGA with Prodigal was necessitated by compatibility issues encountered with the combination of software packages and their respective versions specified in this project. Furthermore, subsequent steps outlined in the original pipeline, which extend beyond the contigs analysis, have been excluded due to the time constraints associated with this project.
+
+Additionally, this version incorporates a visualization step, which is absent in the original pipeline. This inclusion aims to enhance the interpretability of the results, thereby adding value to the analytical process carried out in this school project.
 
 ## Getting Started
 
 ### Prerequisites
 - Conda environment
-- Python 3.9
+- Python 3.6.13
 - R 4.1.0
 - Snakemake
 - Bioinformatics tools: BWA, Samtools, MegaHit, Trimmomatic, Prodigal
 - NCBI datasets CLI
 
 ### Installation
-Clone the repository:
+
+1. **Clone the Project Repository**:
+   If you haven't already, start by cloning the project repository and navigate to the project directory:
+
 ```bash
 git clone https://github.com/Mpslik/Dataprocessing
 cd Dataprocessing/
 ```
-Set up the Conda environment:
+2. **Create and Activate the Conda Environment**:
+Utilize the `environment.yml` file provided in the repository to create an isolated Conda environment that contains all the packages needed for this project:
 
+```bash
 conda env create -f environment.yml
 conda activate ngs-analysis-core
+```
+Ensure to activate the environment each time you work on the project to access the necessary tools and libraries.
 
-markdown
-Copy code
+### Verifying the Installation
+To confirm the environment has been set up correctly and all packages are installed:
 
-Download and prepare the reference genome and raw reads:
+```bash
+conda list
+```
 
-- Refer to the `download_genome_data` and `download_reads` rules in the Snakefile for instructions.
+This command displays all packages installed in your active environment, allowing you to verify their presence and versions.
+
+### Deactivating the Environment
+When you're done working in the Conda environment, it's a good practice to deactivate it to revert to your base system settings:
+
+```bash
+conda deactivate
+```
+
+
+This setup ensures that all tools required for genomic data analysis are properly configured, replicating a robust environment that aids in precise and reproducible research.
+
 
 ### Usage
 Configure your analysis:
