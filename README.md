@@ -27,22 +27,42 @@ Additionally, this version incorporates a visualization step, which is absent in
 - NCBI datasets CLI
 
 ### Installation
-Clone the repository:
+
+1. **Clone the Project Repository**:
+   If you haven't already, start by cloning the project repository and navigate to the project directory:
+
 ```bash
 git clone https://github.com/Mpslik/Dataprocessing
 cd Dataprocessing/
 ```
-Set up the Conda environment:
+2. **Create and Activate the Conda Environment**:
+Utilize the `environment.yml` file provided in the repository to create an isolated Conda environment that contains all the packages needed for this project:
 
+```bash
 conda env create -f environment.yml
 conda activate ngs-analysis-core
+```
+Ensure to activate the environment each time you work on the project to access the necessary tools and libraries.
 
-markdown
-Copy code
+### Verifying the Installation
+To confirm the environment has been set up correctly and all packages are installed:
 
-Download and prepare the reference genome and raw reads:
+```bash
+conda list
+```
 
-- Refer to the `download_genome_data` and `download_reads` rules in the Snakefile for instructions.
+This command displays all packages installed in your active environment, allowing you to verify their presence and versions.
+
+### Deactivating the Environment
+When you're done working in the Conda environment, it's a good practice to deactivate it to revert to your base system settings:
+
+```bash
+conda deactivate
+```
+
+
+This setup ensures that all tools required for genomic data analysis are properly configured, replicating a robust environment that aids in precise and reproducible research.
+
 
 ### Usage
 Configure your analysis:
