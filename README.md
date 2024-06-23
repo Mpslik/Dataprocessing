@@ -1,5 +1,20 @@
 # Genomic Data Analysis Project
 
+# Table of Contents
+1. [Overview](#overview)
+   - [This Project](#this-project)
+   - [Original Pipeline](#original-pipeline)
+   - [Differences](#differences)
+2. [Getting Started](#getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Usage](#usage)
+3. [Pipeline Steps](#pipeline-steps)
+   - [Visualization](#visualization)
+4. [License](#license)
+5. [Acknowledgments / Resources](#acknowledgments--resources)
+
+
 ## Overview
 ### this project
 This project focuses on the analysis of genomic data to identify genes, proteins, and other genomic features from metagenomic samples. Utilizing a suite of bioinformatics tools and R for data visualization, the pipeline processes raw sequencing reads, performs assembly, gene prediction, functional annotation, and visualizes key metrics such as contig lengths, GC content, and coverage.
