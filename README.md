@@ -10,12 +10,11 @@ The article [2] describes the development of a pipeline designed to accelerate t
 ![Original Diagram]( misc/Original_pipeline_diagram.jpeg )
 
 
-### differences: 
-the original article includes more steps than the current pipeline here. This project runs up to the assembly of the contigs and then performs an analyses step with prodigal. 
-the change from MGA to prodigal occurred due to an error running the MGA on this combination of packages and version numbers and would configure in this project pipeline. 
-The rest of the steps that branch off on the original diagram from the contigs file where also omitted due to time constraints of this school project.
-and for the project a visualisation step is included that is not present in the original pipeline 
+### Differences from the Original Pipeline:
 
+This implementation diverges from the pipeline described in the original article in several ways. Notably, this project encompasses the stages up to and including the assembly of contigs, followed by an analysis using Prodigal instead of MGA. The substitution of MGA with Prodigal was necessitated by compatibility issues encountered with the combination of software packages and their respective versions specified in this project. Furthermore, subsequent steps outlined in the original pipeline, which extend beyond the contigs analysis, have been excluded due to the time constraints associated with this project.
+
+Additionally, this version incorporates a visualization step, which is absent in the original pipeline. This inclusion aims to enhance the interpretability of the results, thereby adding value to the analytical process carried out in this school project.
 
 ## Getting Started
 
