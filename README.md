@@ -20,7 +20,7 @@ Additionally, this version incorporates a visualization step, which is absent in
 
 ### Prerequisites
 - Conda environment
-- Python 3.9
+- Python 3.6.13
 - R 4.1.0
 - Snakemake
 - Bioinformatics tools: BWA, Samtools, MegaHit, Trimmomatic, Prodigal
