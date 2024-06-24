@@ -34,7 +34,8 @@ Additionally, this version incorporates a visualization step, which is absent in
 ## Getting Started
 
 ### Prerequisites
-- Conda environment
+- Unix-based system (Linux, macOS)
+- Conda environment 4.10.3
 - Python 3.6.13
 - R 4.1.0
 - Snakemake
